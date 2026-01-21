@@ -123,4 +123,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'cron_token' => env('APP_CRON_TOKEN'),
 ];
