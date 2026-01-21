@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\SendDailyUpdateAction;
 use App\Services\TaskSchedulerService;
+use Illuminate\Http\Request;
 
 class CronController extends Controller
 {
@@ -13,10 +14,12 @@ class CronController extends Controller
     ) {
     }
 
-    public function wakeUp(string $token)
+    public function wakeUp(Request $request)
     {
+        $token = $request->bearerToken();
         $expectedToken = config('app.cron_token');
-        if (!is_string($expectedToken) || $expectedToken === '' || !hash_equals($expectedToken, $token)) {
+
+        if (!is_string($expectedToken) || $expectedToken === '' || !$token || !hash_equals($expectedToken, $token)) {
             abort(403);
         }
 
