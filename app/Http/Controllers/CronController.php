@@ -15,7 +15,8 @@ class CronController extends Controller
 
     public function wakeUp(string $token)
     {
-        if (!hash_equals(config('app.cron_token'), $token)) {
+        $expectedToken = config('app.cron_token');
+        if (!is_string($expectedToken) || $expectedToken === '' || !hash_equals($expectedToken, $token)) {
             abort(403);
         }
 
