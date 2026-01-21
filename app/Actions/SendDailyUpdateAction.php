@@ -18,47 +18,47 @@ class SendDailyUpdateAction
     ) {
     }
 
-    public function execute(Task $task, string $providerName, string $transportName): bool
+    public function execute(Task $task): bool
     {
         try {
-            return DB::transaction(function () use ($task, $providerName, $transportName) {
+            return DB::transaction(function () use ($task) {
                 $payload = $this->contentProvider->getPayload();
 
                 $success = $this->messageTransport->send($payload);
 
                 $this->createUpdateLog(
-                    providerName: $providerName,
-                    transportName: $transportName,
+                    providerName: $this->contentProvider->getProviderName(),
+                    transportName: $this->messageTransport->getTransportName(),
                     payload: $payload,
                     success: $success,
                     errorMessage: null
                 );
 
                 if ($success) {
-                    $this->updateTask($task);
+                    $this->updateTaskLastRun($task);
                 }
 
                 return $success;
             });
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Failed to send daily update', [
                 'task_id' => $task->id,
                 'task_name' => $task->name,
-                'provider' => $providerName,
-                'transport' => $transportName,
+                'provider' => $this->contentProvider->getProviderName(),
+                'transport' => $this->messageTransport->getTransportName(),
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
             try {
                 $this->createUpdateLog(
-                    providerName: $providerName,
-                    transportName: $transportName,
+                    providerName: $this->contentProvider->getProviderName(),
+                    transportName: $this->messageTransport->getTransportName(),
                     payload: [],
                     success: false,
                     errorMessage: $e->getMessage()
                 );
-            } catch (Exception $logException) {
+            } catch (\Throwable $logException) {
                 Log::error('Failed to create error log', [
                     'error' => $logException->getMessage(),
                 ]);
@@ -85,10 +85,9 @@ class SendDailyUpdateAction
         ]);
     }
 
-    private function updateTask(Task $task): void
+    private function updateTaskLastRun(Task $task): void
     {
         $task->last_run_at = now();
-        $task->next_run_at = now()->addDay();
         $task->save();
     }
 }
