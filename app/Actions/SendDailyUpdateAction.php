@@ -8,7 +8,6 @@ use App\Models\Task;
 use App\Models\UpdateLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class SendDailyUpdateAction
 {
@@ -78,7 +77,7 @@ class SendDailyUpdateAction
         UpdateLog::create([
             'provider' => $providerName,
             'transport' => $transportName,
-            'status' => $success ? 'success' : 'failed',
+            'status' => $success ? UpdateLog::STATUS_SUCCESS : UpdateLog::STATUS_FAILED,
             'payload' => $payload,
             'error_message' => $errorMessage,
             'sent_at' => now(),

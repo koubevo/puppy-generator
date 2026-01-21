@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class UpdateLog extends Model
 {
+    public const STATUS_SUCCESS = 'success';
+
+    public const STATUS_FAILED = 'failed';
+
     protected $fillable = [
         'provider',
         'transport',
