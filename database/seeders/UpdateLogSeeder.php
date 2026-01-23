@@ -11,7 +11,6 @@ class UpdateLogSeeder extends Seeder
     {
         UpdateLog::create([
             'provider' => 'puppy',
-            'transport' => 'telegram',
             'status' => UpdateLog::STATUS_SUCCESS,
             'payload' => [
                 'message' => 'Here is your adorable puppy for today! 🐕',
@@ -22,7 +21,6 @@ class UpdateLogSeeder extends Seeder
 
         UpdateLog::create([
             'provider' => 'weather',
-            'transport' => 'telegram',
             'status' => UpdateLog::STATUS_SUCCESS,
             'payload' => [
                 'message' => 'Good morning! Today will be sunny with a high of 22°C ☀️',
@@ -32,7 +30,6 @@ class UpdateLogSeeder extends Seeder
 
         UpdateLog::create([
             'provider' => 'puppy',
-            'transport' => 'telegram',
             'status' => UpdateLog::STATUS_SUCCESS,
             'payload' => [
                 'message' => 'Yesterday\'s puppy was extra fluffy! 🐶',

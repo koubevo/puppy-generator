@@ -10,7 +10,8 @@ class GetFeedAction
 {
     public function __construct(
         private BotRegistry $botRegistry
-    ) {}
+    ) {
+    }
 
     /**
      * Get the feed data for display.
@@ -24,7 +25,7 @@ class GetFeedAction
             ->latest('sent_at')
             ->take(20)
             ->get()
-            ->map(fn (UpdateLog $log) => $this->formatLog($log));
+            ->map(fn(UpdateLog $log) => $this->formatLog($log));
 
         return [
             'logs' => $logs,
@@ -41,9 +42,9 @@ class GetFeedAction
             'bot' => $bot,
             'message' => $log->payload['message'] ?? $log->payload['text'] ?? 'New update available',
             'imageUrl' => $log->payload['image'] ?? $log->payload['image_url'] ?? null,
-            'sentAt' => $log->sent_at ?? $log->created_at,
-            'isToday' => ($log->sent_at ?? $log->created_at)->isToday(),
-            'isYesterday' => ($log->sent_at ?? $log->created_at)->isYesterday(),
+            'sentAt' => $sentAt = $log->sent_at ?? $log->created_at,
+            'isToday' => $sentAt->isToday(),
+            'isYesterday' => $sentAt->isYesterday(),
         ];
     }
 }
