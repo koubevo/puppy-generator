@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+    --color-bg-primary: oklch(0.98 0.01 80);
+    --color-bg-secondary: oklch(0.95 0.02 80);
+    --color-bg-message: oklch(0.92 0.03 80);
+    --color-text-primary: oklch(0.25 0.02 50);
+    --color-text-secondary: oklch(0.50 0.02 50);
+    --color-accent: oklch(0.60 0.20 30);
+    --color-puppy: oklch(0.65 0.18 45);
+    --color-weather: oklch(0.60 0.15 220);
+}

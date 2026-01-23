@@ -3,9 +3,9 @@
 namespace App\Actions;
 
 use App\Contracts\ContentProvider;
-use App\Contracts\MessageTransport;
 use App\Models\Task;
 use App\Models\UpdateLog;
+use App\Services\WebPushService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -13,9 +13,8 @@ class SendDailyUpdateAction
 {
     public function __construct(
         private ContentProvider $contentProvider,
-        private MessageTransport $messageTransport
-    ) {
-    }
+        private WebPushService $webPushService
+    ) {}
 
     public function execute(Task $task): bool
     {
@@ -23,40 +22,33 @@ class SendDailyUpdateAction
             return DB::transaction(function () use ($task) {
                 $payload = $this->contentProvider->getPayload();
 
-                $success = $this->messageTransport->send($payload);
-
                 $this->createUpdateLog(
                     providerName: $this->contentProvider->getProviderName(),
-                    transportName: $this->messageTransport->getTransportName(),
-                    payload: $payload,
-                    success: $success,
-                    errorMessage: null
+                    payload: $payload
                 );
 
-                if ($success) {
-                    $this->updateTaskLastRun($task);
-                }
+                $this->updateTaskLastRun($task);
+                $this->sendPushNotifications($payload);
 
-                return $success;
+                return true;
             });
         } catch (\Throwable $e) {
             Log::error('Failed to send daily update', [
                 'task_id' => $task->id,
                 'task_name' => $task->name,
                 'provider' => $this->contentProvider->getProviderName(),
-                'transport' => $this->messageTransport->getTransportName(),
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
             try {
-                $this->createUpdateLog(
-                    providerName: $this->contentProvider->getProviderName(),
-                    transportName: $this->messageTransport->getTransportName(),
-                    payload: [],
-                    success: false,
-                    errorMessage: $e->getMessage()
-                );
+                UpdateLog::create([
+                    'provider' => $this->contentProvider->getProviderName(),
+                    'status' => UpdateLog::STATUS_FAILED,
+                    'payload' => [],
+                    'error_message' => $e->getMessage(),
+                    'sent_at' => now(),
+                ]);
             } catch (\Throwable $logException) {
                 Log::error('Failed to create error log', [
                     'error' => $logException->getMessage(),
@@ -67,19 +59,12 @@ class SendDailyUpdateAction
         }
     }
 
-    private function createUpdateLog(
-        string $providerName,
-        string $transportName,
-        array $payload,
-        bool $success,
-        ?string $errorMessage
-    ): void {
+    private function createUpdateLog(string $providerName, array $payload): void
+    {
         UpdateLog::create([
             'provider' => $providerName,
-            'transport' => $transportName,
-            'status' => $success ? UpdateLog::STATUS_SUCCESS : UpdateLog::STATUS_FAILED,
+            'status' => UpdateLog::STATUS_SUCCESS,
             'payload' => $payload,
-            'error_message' => $errorMessage,
             'sent_at' => now(),
         ]);
     }
@@ -88,5 +73,19 @@ class SendDailyUpdateAction
     {
         $task->last_run_at = now();
         $task->save();
+    }
+
+    private function sendPushNotifications(array $payload): void
+    {
+        try {
+            $message = $payload['message'] ?? $payload['text'] ?? 'New update available!';
+            $title = ucfirst($this->contentProvider->getProviderName()).' Update';
+
+            $this->webPushService->sendToAll($title, $message);
+        } catch (\Throwable $e) {
+            Log::warning('Failed to send push notifications', [
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }
