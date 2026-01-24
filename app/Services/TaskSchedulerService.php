@@ -16,7 +16,7 @@ class TaskSchedulerService
         );
         $now = now();
 
-        if (!$task->next_run_at || $task->next_run_at->isBefore($now->startOfDay())) {
+        if (!$task->next_run_at || $task->next_run_at->isBefore($now->copy()->startOfDay())) {
             $task->update([
                 'next_run_at' => now()->setHour(rand(9, 12))->setMinute(rand(0, 59)),
             ]);
