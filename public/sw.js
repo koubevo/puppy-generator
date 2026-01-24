@@ -1,10 +1,12 @@
-const CACHE_NAME = 'puppy-updates-v1';
+const CACHE_NAME = 'puppy-updates-v2';
 const STATIC_ASSETS = [
-    '/feed',
     '/manifest.json',
     '/icons/icon-192.png',
     '/icons/icon-512.png'
 ];
+
+// Pages that should use network-first strategy (always fetch fresh content)
+const NETWORK_FIRST_PATHS = ['/feed'];
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
@@ -30,23 +32,44 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - network-first for feed, cache-first for static assets
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
 
-    event.respondWith(
-        caches.match(event.request).then((cached) => {
-            return cached || fetch(event.request).then((response) => {
-                if (response.status === 200 && response.type === 'basic') {
-                    const clone = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, clone);
-                    });
-                }
-                return response;
-            });
-        })
-    );
+    const url = new URL(event.request.url);
+    const isNetworkFirst = NETWORK_FIRST_PATHS.some(path => url.pathname.startsWith(path));
+
+    if (isNetworkFirst) {
+        // Network-first strategy for dynamic content like /feed
+        event.respondWith(
+            fetch(event.request)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const clone = response.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, clone);
+                        });
+                    }
+                    return response;
+                })
+                .catch(() => caches.match(event.request))
+        );
+    } else {
+        // Cache-first strategy for static assets
+        event.respondWith(
+            caches.match(event.request).then((cached) => {
+                return cached || fetch(event.request).then((response) => {
+                    if (response.status === 200 && response.type === 'basic') {
+                        const clone = response.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, clone);
+                        });
+                    }
+                    return response;
+                });
+            })
+        );
+    }
 });
 
 // Push event - show notification

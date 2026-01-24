@@ -64,7 +64,32 @@ PROMPT;
      */
     public function generatePuppyImage(): array
     {
-        $prompt = 'Generate a cute, adorable puppy. Random breed, heartwarming expression, professional pet photography quality.';
+        $breeds = [
+            'Golden Retriever',
+            'Labrador Retriever',
+            'Corgi',
+            'Shiba Inu',
+            'Pomeranian',
+            'French Bulldog',
+            'Beagle',
+            'Husky',
+            'Australian Shepherd',
+            'Cavalier King Charles Spaniel',
+            'Samoyed',
+            'Border Collie',
+            'Dachshund',
+            'Maltese',
+            'Yorkshire Terrier',
+            'German Shepherd',
+            'Bernese Mountain Dog',
+            'Poodle',
+            'Cocker Spaniel',
+            'Dalmatian',
+        ];
+
+        $selectedBreed = $breeds[array_rand($breeds)];
+
+        $prompt = "Generate a cute, adorable {$selectedBreed} puppy. Heartwarming expression, professional pet photography quality. The puppy should be the main focus of the image.";
 
         try {
             $response = $this->client
