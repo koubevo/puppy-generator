@@ -41,10 +41,33 @@ class GetFeedAction
             'id' => $log->id,
             'bot' => $bot,
             'message' => $log->payload['message'] ?? $log->payload['text'] ?? 'New update available',
-            'imageUrl' => $log->payload['image'] ?? $log->payload['image_url'] ?? null,
+            'imageUrl' => $this->extractImageUrl($log->payload),
             'sentAt' => $sentAt = $log->sent_at ?? $log->created_at,
             'isToday' => $sentAt->isToday(),
             'isYesterday' => $sentAt->isYesterday(),
         ];
+    }
+
+    private function extractImageUrl(array $payload): ?string
+    {
+        // Check for direct URL string
+        if (isset($payload['image_url']) && is_string($payload['image_url'])) {
+            return $payload['image_url'];
+        }
+
+        // Check for base64 image object with mime_type and data
+        if (isset($payload['image']) && is_array($payload['image'])) {
+            $image = $payload['image'];
+            if (isset($image['mime_type'], $image['data'])) {
+                return 'data:' . $image['mime_type'] . ';base64,' . $image['data'];
+            }
+        }
+
+        // Check if image is a direct URL string
+        if (isset($payload['image']) && is_string($payload['image'])) {
+            return $payload['image'];
+        }
+
+        return null;
     }
 }
