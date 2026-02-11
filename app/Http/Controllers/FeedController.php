@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Actions\GetFeedAction;
-use Illuminate\Contracts\View\View;
+use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 
 class FeedController extends Controller
 {
-    public function index(GetFeedAction $action): View
+    public function index(GetFeedAction $action): ViewContract
     {
         $data = $action->execute();
 
@@ -23,10 +24,7 @@ class FeedController extends Controller
             limit: 6,
         );
 
-        $html = '';
-        foreach ($data['logs'] as $log) {
-            $html .= view('partials._feed-item', ['log' => $log])->render();
-        }
+        $html = View::renderEach('partials._feed-item', $data['logs'], 'log');
 
         return response()->json([
             'html' => $html,

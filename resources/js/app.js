@@ -165,6 +165,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnLabel = loadMoreBtn.querySelector('span');
     const btnIcon = loadMoreBtn.querySelector('svg');
 
+    const resetBtn = () => {
+        btnLabel.textContent = 'Load more';
+        if (btnIcon) btnIcon.classList.remove('hidden');
+        loadMoreBtn.disabled = false;
+    };
+
     loadMoreBtn.addEventListener('click', async () => {
         const nextBefore = loadMoreBtn.dataset.nextBefore;
         if (!nextBefore) return;
@@ -181,17 +187,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.hasMore && data.nextBefore) {
                 loadMoreBtn.dataset.nextBefore = data.nextBefore;
-                btnLabel.textContent = 'Load more';
-                if (btnIcon) btnIcon.classList.remove('hidden');
-                loadMoreBtn.disabled = false;
+                resetBtn();
             } else {
                 loadMoreBtn.closest('#load-more-wrapper').remove();
             }
         } catch (error) {
             console.error('Failed to load more:', error);
-            btnLabel.textContent = 'Load more';
-            if (btnIcon) btnIcon.classList.remove('hidden');
-            loadMoreBtn.disabled = false;
+            resetBtn();
         }
     });
 });
