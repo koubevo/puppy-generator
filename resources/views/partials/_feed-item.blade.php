@@ -9,7 +9,10 @@
     <div class="flex-1 min-w-0">
         <div class="flex items-baseline gap-2 mb-1">
             <span class="font-semibold text-sm text-text-primary">{{ $log['bot']['name'] }}</span>
-            <span class="text-xs text-text-secondary">{{ $log['sentAt']->format('g:i A') }}</span>
+            <span class="text-xs text-text-secondary">
+                {{ $log['isToday'] ? 'Today' : ($log['isYesterday'] ? 'Yesterday' : $log['sentAt']->format('M j')) }},
+                {{ $log['sentAt']->format('g:i A') }}
+            </span>
         </div>
 
         <div

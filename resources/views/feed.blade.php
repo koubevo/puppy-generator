@@ -31,11 +31,11 @@
         @if($hasMore)
             <div id="load-more-wrapper" class="flex justify-center py-6 pb-10">
                 <button id="load-more-btn" data-next-before="{{ $logs->last()['id'] ?? '' }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full
-                                   bg-accent/10 text-accent text-sm font-semibold
-                                   border border-accent/20
-                                   hover:bg-accent/20 hover:border-accent/30
-                                   transition-all hover:scale-105 active:scale-95
-                                   cursor-pointer">
+                                                   bg-accent/10 text-accent text-sm font-semibold
+                                                   border border-accent/20
+                                                   hover:bg-accent/20 hover:border-accent/30
+                                                   transition-all hover:scale-105 active:scale-95
+                                                   cursor-pointer">
                     <span>Load more</span>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
