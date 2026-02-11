@@ -10,6 +10,123 @@ use Illuminate\Support\Facades\Log;
 
 class GeminiService
 {
+    private const BREEDS = [
+        'Golden Retriever',
+        'Labrador Retriever',
+        'Corgi',
+        'Shiba Inu',
+        'Pomeranian',
+        'French Bulldog',
+        'Beagle',
+        'Husky',
+        'Australian Shepherd',
+        'Cavalier King Charles Spaniel',
+        'Samoyed',
+        'Border Collie',
+        'Dachshund',
+        'Maltese',
+        'Yorkshire Terrier',
+        'German Shepherd',
+        'Bernese Mountain Dog',
+        'Poodle',
+        'Cocker Spaniel',
+        'Dalmatian',
+        'Shih Tzu',
+        'Chihuahua',
+        'Jack Russell Terrier',
+        'Akita',
+        'Boxer',
+        'Great Dane',
+        'Rottweiler',
+        'Doberman',
+        'Newfoundland',
+        'Saint Bernard',
+        'Irish Setter',
+        'Weimaraner',
+        'Vizsla',
+        'Whippet',
+        'Papillon',
+        'Havanese',
+        'Basenji',
+        'Chow Chow',
+    ];
+
+    private const ENVIRONMENTS = [
+        'in a sunny wildflower meadow',
+        'on a sandy beach at golden hour',
+        'in a cozy living room by a fireplace',
+        'in a snowy forest',
+        'in a colorful autumn park with fallen leaves',
+        'in a blooming cherry blossom garden',
+        'on a wooden porch during a rainy day',
+        'in a sunlit kitchen',
+        'in a grassy backyard with a garden hose',
+        'on a hiking trail in the mountains',
+        'in a field of lavender',
+        'by a calm lake at sunset',
+        'on a city sidewalk café terrace',
+        'in a Christmas-decorated room',
+        'in a sunflower field',
+        'on a farm with hay bales',
+        'in a misty forest clearing at dawn',
+        'on a boat on a lake',
+        'in a cozy bed with blankets',
+        'in a spring garden with tulips',
+        'on a rocky coastline',
+        'under a big oak tree',
+        'in a studio with colorful paper backdrops',
+        'on a picnic blanket in a park',
+    ];
+
+    private const ACTIVITIES = [
+        'sleeping peacefully curled up',
+        'running joyfully',
+        'playing with a tennis ball',
+        'tilting its head curiously',
+        'catching snowflakes',
+        'splashing in a puddle',
+        'chewing on a toy bone',
+        'sitting proudly and looking at the camera',
+        'yawning adorably',
+        'rolling on its back in the grass',
+        'chasing a butterfly',
+        'digging in the sand',
+        'peeking out from behind a blanket',
+        'stretching after a nap',
+        'playing tug-of-war with a rope toy',
+        'sniffing flowers curiously',
+        'jumping in the air',
+        'cuddling with a stuffed animal',
+        'balancing a treat on its nose',
+        'howling at the sky',
+        'shaking off water',
+        'playing with autumn leaves',
+        'lying in a sunbeam',
+        'wearing a tiny knitted sweater',
+    ];
+
+    private const MOODS = [
+        'heartwarming and cozy',
+        'playful and energetic',
+        'serene and peaceful',
+        'funny and goofy',
+        'majestic and proud',
+        'curious and adventurous',
+        'sleepy and soft',
+        'joyful and excited',
+    ];
+
+    private const STYLES = [
+        'professional pet photography, shallow depth of field',
+        'warm cinematic lighting, film grain',
+        'vibrant and colorful, high contrast',
+        'soft pastel tones, dreamy atmosphere',
+        'golden hour natural light, bokeh background',
+        'cozy warm tones, lifestyle photography',
+        'dramatic lighting, studio quality',
+        'watercolor painting style, artistic',
+    ];
+
     private Client $client;
 
     public function __construct()
@@ -64,128 +181,11 @@ PROMPT;
      */
     public function generatePuppyImage(): array
     {
-        $breeds = [
-            'Golden Retriever',
-            'Labrador Retriever',
-            'Corgi',
-            'Shiba Inu',
-            'Pomeranian',
-            'French Bulldog',
-            'Beagle',
-            'Husky',
-            'Australian Shepherd',
-            'Cavalier King Charles Spaniel',
-            'Samoyed',
-            'Border Collie',
-            'Dachshund',
-            'Maltese',
-            'Yorkshire Terrier',
-            'German Shepherd',
-            'Bernese Mountain Dog',
-            'Poodle',
-            'Cocker Spaniel',
-            'Dalmatian',
-            'Shih Tzu',
-            'Chihuahua',
-            'Jack Russell Terrier',
-            'Akita',
-            'Boxer',
-            'Great Dane',
-            'Rottweiler',
-            'Doberman',
-            'Newfoundland',
-            'Saint Bernard',
-            'Irish Setter',
-            'Weimaraner',
-            'Vizsla',
-            'Whippet',
-            'Papillon',
-            'Havanese',
-            'Basenji',
-            'Chow Chow',
-        ];
-
-        $environments = [
-            'in a sunny wildflower meadow',
-            'on a sandy beach at golden hour',
-            'in a cozy living room by a fireplace',
-            'in a snowy forest',
-            'in a colorful autumn park with fallen leaves',
-            'in a blooming cherry blossom garden',
-            'on a wooden porch during a rainy day',
-            'in a sunlit kitchen',
-            'in a grassy backyard with a garden hose',
-            'on a hiking trail in the mountains',
-            'in a field of lavender',
-            'by a calm lake at sunset',
-            'on a city sidewalk café terrace',
-            'in a Christmas-decorated room',
-            'in a sunflower field',
-            'on a farm with hay bales',
-            'in a misty forest clearing at dawn',
-            'on a boat on a lake',
-            'in a cozy bed with blankets',
-            'in a spring garden with tulips',
-            'on a rocky coastline',
-            'under a big oak tree',
-            'in a studio with colorful paper backdrops',
-            'on a picnic blanket in a park',
-        ];
-
-        $activities = [
-            'sleeping peacefully curled up',
-            'running joyfully',
-            'playing with a tennis ball',
-            'tilting its head curiously',
-            'catching snowflakes',
-            'splashing in a puddle',
-            'chewing on a toy bone',
-            'sitting proudly and looking at the camera',
-            'yawning adorably',
-            'rolling on its back in the grass',
-            'chasing a butterfly',
-            'digging in the sand',
-            'peeking out from behind a blanket',
-            'stretching after a nap',
-            'playing tug-of-war with a rope toy',
-            'sniffing flowers curiously',
-            'jumping in the air',
-            'cuddling with a stuffed animal',
-            'balancing a treat on its nose',
-            'howling at the sky',
-            'shaking off water',
-            'playing with autumn leaves',
-            'lying in a sunbeam',
-            'wearing a tiny knitted sweater',
-        ];
-
-        $moods = [
-            'heartwarming and cozy',
-            'playful and energetic',
-            'serene and peaceful',
-            'funny and goofy',
-            'majestic and proud',
-            'curious and adventurous',
-            'sleepy and soft',
-            'joyful and excited',
-        ];
-
-        $styles = [
-            'professional pet photography, shallow depth of field',
-            'warm cinematic lighting, film grain',
-            'vibrant and colorful, high contrast',
-            'soft pastel tones, dreamy atmosphere',
-            'golden hour natural light, bokeh background',
-            'cozy warm tones, lifestyle photography',
-            'dramatic lighting, studio quality',
-            'watercolor painting style, artistic',
-        ];
-
-        $selectedBreed = $breeds[array_rand($breeds)];
-        $selectedEnvironment = $environments[array_rand($environments)];
-        $selectedActivity = $activities[array_rand($activities)];
-        $selectedMood = $moods[array_rand($moods)];
-        $selectedStyle = $styles[array_rand($styles)];
+        $selectedBreed = self::BREEDS[array_rand(self::BREEDS)];
+        $selectedEnvironment = self::ENVIRONMENTS[array_rand(self::ENVIRONMENTS)];
+        $selectedActivity = self::ACTIVITIES[array_rand(self::ACTIVITIES)];
+        $selectedMood = self::MOODS[array_rand(self::MOODS)];
+        $selectedStyle = self::STYLES[array_rand(self::STYLES)];
 
         $prompt = "A cute, adorable {$selectedBreed} puppy {$selectedActivity} {$selectedEnvironment}. The mood is {$selectedMood}. Style: {$selectedStyle}. The puppy should be the main focus of the image.";
 
