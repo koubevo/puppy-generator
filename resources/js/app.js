@@ -156,13 +156,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-// Scroll to Today section on page load
+// Load More handler
 document.addEventListener('DOMContentLoaded', () => {
-    const todaySection = document.getElementById('today-section');
-    if (todaySection) {
-        // Small delay to ensure layout is complete
-        setTimeout(() => {
-            todaySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-    }
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (!loadMoreBtn) return;
+
+    const feedContainer = document.getElementById('feed-container');
+    const btnLabel = loadMoreBtn.querySelector('span');
+    const btnIcon = loadMoreBtn.querySelector('svg');
+
+    loadMoreBtn.addEventListener('click', async () => {
+        const nextBefore = loadMoreBtn.dataset.nextBefore;
+        if (!nextBefore) return;
+
+        loadMoreBtn.disabled = true;
+        btnLabel.textContent = 'Loading…';
+        if (btnIcon) btnIcon.classList.add('hidden');
+
+        try {
+            const response = await fetch(`/feed/more?before=${nextBefore}`);
+            const data = await response.json();
+
+            feedContainer.insertAdjacentHTML('beforeend', data.html);
+
+            if (data.hasMore && data.nextBefore) {
+                loadMoreBtn.dataset.nextBefore = data.nextBefore;
+                btnLabel.textContent = 'Load more';
+                if (btnIcon) btnIcon.classList.remove('hidden');
+                loadMoreBtn.disabled = false;
+            } else {
+                loadMoreBtn.closest('#load-more-wrapper').remove();
+            }
+        } catch (error) {
+            console.error('Failed to load more:', error);
+            btnLabel.textContent = 'Load more';
+            if (btnIcon) btnIcon.classList.remove('hidden');
+            loadMoreBtn.disabled = false;
+        }
+    });
 });
+

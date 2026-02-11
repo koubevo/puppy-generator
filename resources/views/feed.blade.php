@@ -14,52 +14,10 @@
             </button>
         </header>
 
-        {{-- Messages grouped by date --}}
-        <div class="space-y-5 pb-8">
-            @php $lastDateLabel = null; @endphp
-
-            @forelse($logs->reverse() as $log)
-                @php
-                    $dateLabel = $log['isToday'] ? 'Today' : ($log['isYesterday'] ? 'Yesterday' : $log['sentAt']->format('M j'));
-                @endphp
-
-                {{-- Date separator --}}
-                @if($dateLabel !== $lastDateLabel)
-                    <div id="{{ $log['isToday'] ? 'today-section' : '' }}" class="flex items-center gap-3 pt-4 scroll-mt-16">
-                        <span
-                            class="text-xs font-medium text-text-secondary uppercase tracking-wide {{ $log['isToday'] ? 'text-accent' : '' }}">
-                            {{ $dateLabel }}
-                        </span>
-                        <div class="flex-1 h-px bg-bg-message"></div>
-                    </div>
-                    @php $lastDateLabel = $dateLabel; @endphp
-                @endif
-
-                <article class="flex gap-3 group {{ $log['isToday'] ? 'animate-fade-in' : '' }}">
-                    {{-- Bot Avatar --}}
-                    <div
-                        class="shrink-0 w-11 h-11 rounded-full {{ $log['bot']['color'] }} flex items-center justify-center text-lg shadow-sm group-hover:scale-105 transition-transform">
-                        {{ $log['bot']['emoji'] }}
-                    </div>
-
-                    {{-- Message Content --}}
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-baseline gap-2 mb-1">
-                            <span class="font-semibold text-sm text-text-primary">{{ $log['bot']['name'] }}</span>
-                            <span class="text-xs text-text-secondary">{{ $log['sentAt']->format('g:i A') }}</span>
-                        </div>
-
-                        <div
-                            class="bg-white rounded-2xl rounded-tl-md px-4 py-3 shadow-sm border {{ $log['isToday'] ? 'border-accent/30' : 'border-bg-message/50' }}">
-                            @if($log['imageUrl'])
-                                <img src="{{ $log['imageUrl'] }}" alt="Update image"
-                                    class="rounded-xl mb-3 max-w-full h-auto shadow-sm" loading="lazy">
-                            @endif
-
-                            <p class="text-sm leading-relaxed text-text-primary whitespace-pre-wrap">{{ $log['message'] }}</p>
-                        </div>
-                    </div>
-                </article>
+        {{-- Messages (newest first) --}}
+        <div id="feed-container" class="space-y-5 pb-8">
+            @forelse($logs as $log)
+                @include('partials._feed-item', ['log' => $log])
             @empty
                 <div class="text-center py-20">
                     <p class="text-5xl mb-4">🐶</p>
@@ -68,5 +26,22 @@
                 </div>
             @endforelse
         </div>
+
+        {{-- Load More --}}
+        @if($hasMore)
+            <div id="load-more-wrapper" class="flex justify-center py-6 pb-10">
+                <button id="load-more-btn" data-next-before="{{ $logs->last()['id'] ?? '' }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full
+                                   bg-accent/10 text-accent text-sm font-semibold
+                                   border border-accent/20
+                                   hover:bg-accent/20 hover:border-accent/30
+                                   transition-all hover:scale-105 active:scale-95
+                                   cursor-pointer">
+                    <span>Load more</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+            </div>
+        @endif
     </div>
 @endsection

@@ -10,25 +10,38 @@ class GetFeedAction
 {
     public function __construct(
         private BotRegistry $botRegistry
-    ) {
-    }
+    ) {}
 
     /**
      * Get the feed data for display.
      *
-     * @return array{logs: Collection, vapidPublicKey: ?string}
+     * @return array{logs: Collection, hasMore: bool, vapidPublicKey: ?string}
      */
-    public function execute(): array
+    public function execute(?int $beforeId = null, int $limit = 6): array
     {
-        $logs = UpdateLog::query()
+        $query = UpdateLog::query()
             ->where('status', UpdateLog::STATUS_SUCCESS)
-            ->latest('sent_at')
-            ->take(20)
-            ->get()
-            ->map(fn(UpdateLog $log) => $this->formatLog($log));
+            ->latest('sent_at');
+
+        if ($beforeId !== null) {
+            $query->where('id', '<', $beforeId);
+        }
+
+        $logs = $query
+            ->take($limit + 1)
+            ->get();
+
+        $hasMore = $logs->count() > $limit;
+
+        if ($hasMore) {
+            $logs = $logs->take($limit);
+        }
+
+        $formattedLogs = $logs->map(fn (UpdateLog $log) => $this->formatLog($log));
 
         return [
-            'logs' => $logs,
+            'logs' => $formattedLogs,
+            'hasMore' => $hasMore,
             'vapidPublicKey' => config('webpush.vapid.public_key'),
         ];
     }
@@ -59,7 +72,7 @@ class GetFeedAction
         if (isset($payload['image']) && is_array($payload['image'])) {
             $image = $payload['image'];
             if (isset($image['mime_type'], $image['data'])) {
-                return 'data:' . $image['mime_type'] . ';base64,' . $image['data'];
+                return 'data:'.$image['mime_type'].';base64,'.$image['data'];
             }
         }
 
