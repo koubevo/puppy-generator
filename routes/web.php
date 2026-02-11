@@ -6,6 +6,7 @@ use App\Services\GeminiService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/feed', [FeedController::class, 'index'])->name('feed');
+Route::get('/feed/more', [FeedController::class, 'more'])->name('feed.more');
 
 Route::post('/push/subscribe', [PushSubscriptionController::class, 'store']);
 Route::delete('/push/unsubscribe', [PushSubscriptionController::class, 'destroy']);
@@ -23,7 +24,7 @@ if (app()->isLocal()) {
 
         return response()->json([
             'mime_type' => $image['mime_type'],
-            'image_preview' => 'data:' . $image['mime_type'] . ';base64,' . substr($image['data'], 0, 100) . '...',
+            'image_preview' => 'data:'.$image['mime_type'].';base64,'.substr($image['data'], 0, 100).'...',
         ]);
     });
 
@@ -32,8 +33,7 @@ if (app()->isLocal()) {
 
         return view('test-gemini', [
             'message' => $gemini->generateMotivationalText(),
-            'image' => 'data:' . $image['mime_type'] . ';base64,' . $image['data'],
+            'image' => 'data:'.$image['mime_type'].';base64,'.$image['data'],
         ]);
     });
 }
-
