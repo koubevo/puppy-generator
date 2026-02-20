@@ -8,10 +8,16 @@
         <header class="sticky top-0 z-10 flex items-center justify-between py-4 bg-bg-primary/80 backdrop-blur-md">
             <h1 class="text-2xl font-semibold">Puppy Feed</h1>
 
-            <button id="notification-toggle" data-vapid-key="{{ $vapidPublicKey ?? '' }}"
-                class="text-sm px-4 py-2 rounded-full bg-bg-secondary text-text-secondary hover:bg-bg-message transition-all hover:scale-105 active:scale-95">
-                🔕 Enable Notifications
-            </button>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('gallery') }}"
+                    class="text-sm px-4 py-2 rounded-full bg-accent/10 text-accent font-medium hover:bg-accent/20 transition-all hover:scale-105 active:scale-95">
+                    🖼️ Gallery
+                </a>
+                <button id="notification-toggle" data-vapid-key="{{ $vapidPublicKey ?? '' }}"
+                    class="text-sm px-4 py-2 rounded-full bg-bg-secondary text-text-secondary hover:bg-bg-message transition-all hover:scale-105 active:scale-95">
+                    🔕 Enable Notifications
+                </button>
+            </div>
         </header>
 
         {{-- Messages (newest first) --}}
@@ -31,11 +37,11 @@
         @if($hasMore)
             <div id="load-more-wrapper" class="flex justify-center py-6 pb-10">
                 <button id="load-more-btn" data-next-before="{{ $logs->last()['id'] ?? '' }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full
-                                                   bg-accent/10 text-accent text-sm font-semibold
-                                                   border border-accent/20
-                                                   hover:bg-accent/20 hover:border-accent/30
-                                                   transition-all hover:scale-105 active:scale-95
-                                                   cursor-pointer">
+                                                           bg-accent/10 text-accent text-sm font-semibold
+                                                           border border-accent/20
+                                                           hover:bg-accent/20 hover:border-accent/30
+                                                           transition-all hover:scale-105 active:scale-95
+                                                           cursor-pointer">
                     <span>Load more</span>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />

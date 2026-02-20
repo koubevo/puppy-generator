@@ -4,10 +4,13 @@ namespace App\Actions;
 
 use App\Models\UpdateLog;
 use App\Services\BotRegistry;
+use App\Traits\ExtractsImageUrl;
 use Illuminate\Support\Collection;
 
 class GetFeedAction
 {
+    use ExtractsImageUrl;
+
     public function __construct(
         private BotRegistry $botRegistry
     ) {}
@@ -59,28 +62,5 @@ class GetFeedAction
             'isToday' => $sentAt->isToday(),
             'isYesterday' => $sentAt->isYesterday(),
         ];
-    }
-
-    private function extractImageUrl(array $payload): ?string
-    {
-        // Check for direct URL string
-        if (isset($payload['image_url']) && is_string($payload['image_url'])) {
-            return $payload['image_url'];
-        }
-
-        // Check for base64 image object with mime_type and data
-        if (isset($payload['image']) && is_array($payload['image'])) {
-            $image = $payload['image'];
-            if (isset($image['mime_type'], $image['data'])) {
-                return 'data:'.$image['mime_type'].';base64,'.$image['data'];
-            }
-        }
-
-        // Check if image is a direct URL string
-        if (isset($payload['image']) && is_string($payload['image'])) {
-            return $payload['image'];
-        }
-
-        return null;
     }
 }
