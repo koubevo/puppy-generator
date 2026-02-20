@@ -11,15 +11,14 @@ class CronController extends Controller
     public function __construct(
         protected TaskSchedulerService $scheduler,
         protected SendDailyUpdateAction $action
-    ) {
-    }
+    ) {}
 
     public function wakeUp(Request $request, string $taskName)
     {
         $token = $request->bearerToken();
         $expectedToken = config('app.cron_token');
 
-        if (!is_string($expectedToken) || $expectedToken === '' || !$token || !hash_equals($expectedToken, $token)) {
+        if (! is_string($expectedToken) || $expectedToken === '' || ! $token || ! hash_equals($expectedToken, $token)) {
             abort(403);
         }
 
@@ -27,6 +26,7 @@ class CronController extends Controller
 
         if ($task) {
             $this->action->execute($task);
+
             return response()->json(['status' => 'executed']);
         }
 
