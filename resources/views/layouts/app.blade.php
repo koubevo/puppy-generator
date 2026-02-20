@@ -18,6 +18,7 @@
 
 <body class="bg-bg-primary text-text-primary min-h-screen">
     @yield('content')
+    @stack('scripts')
 </body>
 
 </html>

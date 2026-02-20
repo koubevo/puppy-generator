@@ -1,12 +1,19 @@
 <?php
 
 use App\Http\Controllers\FeedController;
+use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Services\GeminiService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/feed', [FeedController::class, 'index'])->name('feed');
 Route::get('/feed/more', [FeedController::class, 'more'])->name('feed.more');
+
+Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
+Route::get('/gallery/more', [GalleryController::class, 'more'])->name('gallery.more');
+
+Route::get('/image/{updateLog}', [ImageController::class, 'show'])->name('image.show');
 
 Route::post('/push/subscribe', [PushSubscriptionController::class, 'store']);
 Route::delete('/push/unsubscribe', [PushSubscriptionController::class, 'destroy']);

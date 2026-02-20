@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class UpdateLog extends Model
 {
+    use HasFactory;
+
     public const STATUS_SUCCESS = 'success';
 
     public const STATUS_FAILED = 'failed';
