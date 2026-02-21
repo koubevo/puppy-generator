@@ -32,7 +32,7 @@ it('does not send event if there is no matched date', function () {
     $response->assertJson(['status' => 'idle']);
 
     assertDatabaseMissing('update_logs', [
-        'provider' => 'event_puppy',
+        'provider' => 'announcements',
     ]);
 });
 
@@ -55,7 +55,7 @@ it('sends event if month and day match', function () {
     $response->assertSuccessful();
     $response->assertJson(['status' => 'executed']);
 
-    $log = UpdateLog::where('provider', 'event_puppy')->first();
+    $log = UpdateLog::where('provider', 'announcements')->first();
     expect($log)->not->toBeNull();
     expect($log->payload['message'])->toBe('Cinco de Mayo');
 });
@@ -79,7 +79,7 @@ it('sends event if day only matches', function () {
     $response->assertSuccessful();
     $response->assertJson(['status' => 'executed']);
 
-    $log = UpdateLog::where('provider', 'event_puppy')->latest()->first();
+    $log = UpdateLog::where('provider', 'announcements')->latest()->first();
     expect($log)->not->toBeNull();
     expect($log->payload['message'])->toBe('Mid month');
 });

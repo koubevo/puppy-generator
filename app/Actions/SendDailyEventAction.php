@@ -10,13 +10,14 @@ class SendDailyEventAction
 {
     public function __construct(
         private WebPushService $webPushService
-    ) {}
+    ) {
+    }
 
     public function execute(): bool
     {
         $events = config('events.daily');
 
-        if (! is_array($events)) {
+        if (!is_array($events)) {
             Log::warning('No valid events configuration found.');
 
             return false;
@@ -35,7 +36,7 @@ class SendDailyEventAction
             }
         }
 
-        if (! $matchedEvent) {
+        if (!$matchedEvent) {
             return false;
         }
 
@@ -62,7 +63,7 @@ class SendDailyEventAction
     private function createUpdateLog(array $payload): void
     {
         UpdateLog::create([
-            'provider' => 'event_puppy',
+            'provider' => 'announcements',
             'status' => UpdateLog::STATUS_SUCCESS,
             'payload' => $payload,
             'sent_at' => now(),
