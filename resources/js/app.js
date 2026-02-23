@@ -127,9 +127,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const updateButtonState = async () => {
         const subscription = await window.PushManager.getSubscription();
         if (subscription) {
-            toggleBtn.textContent = '🔔 Notifications On';
-            toggleBtn.classList.add('subscribed');
+            toggleBtn.classList.add('hidden');
         } else {
+            toggleBtn.classList.remove('hidden');
             toggleBtn.textContent = '🔕 Enable Notifications';
             toggleBtn.classList.remove('subscribed');
         }
