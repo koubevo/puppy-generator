@@ -187,7 +187,11 @@ PROMPT;
         $selectedMood = self::MOODS[array_rand(self::MOODS)];
         $selectedStyle = self::STYLES[array_rand(self::STYLES)];
 
-        $prompt = "A cute, adorable {$selectedBreed} puppy {$selectedActivity} {$selectedEnvironment}. The mood is {$selectedMood}. Style: {$selectedStyle}. The puppy should be the main focus of the image.";
+        $puppyCount = rand(1, 3);
+        $subject = $puppyCount === 1 ? "A cute, adorable {$selectedBreed} puppy" : "{$puppyCount} cute, adorable {$selectedBreed} puppies";
+        $focus = $puppyCount === 1 ? 'puppy' : 'puppies';
+
+        $prompt = "{$subject} {$selectedActivity} {$selectedEnvironment}. The mood is {$selectedMood}. Style: {$selectedStyle}. The {$focus} should be the main focus of the image.";
 
         try {
             $response = $this->client
