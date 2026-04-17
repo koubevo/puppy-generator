@@ -146,7 +146,7 @@ class GeminiService
     public function generateMotivationalText(): string
     {
         $prompt = <<<'PROMPT'
-Jsi přátelský a láskyplný denní motivační asistent. Tvým úkolem je napsat krátkou, 
+Jsi přátelský a láskyplný denní motivační asistent. Tvým úkolem je napsat krátkou,
 srdečnou motivační zprávu v češtině pro mladou ženu, která pilně studuje a miluje psy.
 
 Pravidla:
@@ -195,7 +195,7 @@ PROMPT;
 
         try {
             $response = $this->client
-                ->generativeModel(model: 'gemini-2.5-flash-image')
+                ->generativeModel(model: 'gemini-3.1-flash-image-preview')
                 ->withGenerationConfig(
                     generationConfig: new GenerationConfig(
                         responseModalities: [ResponseModality::IMAGE, ResponseModality::TEXT],
